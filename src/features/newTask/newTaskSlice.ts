@@ -102,11 +102,10 @@ const newTaskApi = api.injectEndpoints({
             workerpools: workerpools(
               first: 100
               where: { description_contains_nocase: $searchText 
-                ${
-                  args.restrictedWorkerpools
-                    ? ", id_in: " + args.restrictedWorkerpools.toLowerCase()
-                    : ""
-                } 
+                ${args.restrictedWorkerpools
+            ? ", id_in: " + args.restrictedWorkerpools.toLowerCase()
+            : ""
+          } 
             }) {
               id
               description
@@ -183,7 +182,7 @@ const newTaskApi = api.injectEndpoints({
             iexec_result_storage_provider,
           } = formFields;
 
-          const iexec_input_files =
+          const iexec_input_file =
             formFields.inputFiles.trim().length === 0 ? "" : formFields.inputFiles.split(",");
 
           let tag = iexec_result_encryption ? "tee" : "";
@@ -196,7 +195,7 @@ const newTaskApi = api.injectEndpoints({
             params:
               {
                 iexec_args: formFields.args,
-                iexec_input_files,
+                iexec_input_files:iexec_input_file,
                 iexec_result_storage_provider,
                 iexec_result_encryption,
               } || "",
@@ -222,7 +221,6 @@ const newTaskApi = api.injectEndpoints({
             const requestOrder = await iexec.order.signRequestorder(requestOrderToSign);
 
             let published = await iexec.order.publishRequestorder(requestOrder);
-
             return { data: published };
           } else {
             const { appOrder, datasetOrder, workerpoolOrder } = await getBestOrders(
@@ -232,12 +230,16 @@ const newTaskApi = api.injectEndpoints({
               workerpool,
               category
             );
-
+            console.log("one")
+            console.log("requestOrderFields", requestOrderFields)
+            console.log("removeEmptyProps(requestOrderFields)", removeEmptyProps(requestOrderFields))
             const requestOrderToSign = await iexec.order.createRequestorder(
               removeEmptyProps(requestOrderFields)
             );
+            console.log("two")
 
             const requestOrder = await iexec.order.signRequestorder(requestOrderToSign);
+            console.log("three")
 
             const res = await iexec.order.matchOrders({
               apporder: appOrder,
@@ -245,6 +247,7 @@ const newTaskApi = api.injectEndpoints({
               requestorder: requestOrder,
               workerpoolorder: workerpoolOrder,
             });
+            console.log("four")
 
             return { data: res.dealid };
           }

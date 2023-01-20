@@ -2,7 +2,7 @@ export const removeEmptyProps = (obj: any): any => {
   return Object.fromEntries(
     Object.entries(obj)
       .filter(([_, v]) => v != null && v !== "")
-      .map(([k, v]) => [k, v === Object(v) ? removeEmptyProps(v) : v])
+      .map(([k, v]) => [k, v])
   );
 };
 

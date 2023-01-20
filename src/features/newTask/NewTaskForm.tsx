@@ -108,6 +108,7 @@ export default function NewTaskForm() {
   const validateInputFiles = (value: string) => {
     let files = value.split(",");
     const wrongUrl = (v: string) => v.trim().indexOf(" ") !== -1;
+    console.log("validateInputFiles", !files.some(wrongUrl) || "Please provide a coma separated URLs")
     return !files.some(wrongUrl) || "Please provide a coma separated URLs";
   };
 
